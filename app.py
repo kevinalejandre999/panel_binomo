@@ -26,5 +26,7 @@ def update_data():
         return jsonify({"message": "Datos actualizados correctamente"}), 200
     return jsonify({"error": "Formato inválido. Se esperaba JSON."}), 400
 
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
