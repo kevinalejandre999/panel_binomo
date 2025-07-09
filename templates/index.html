@@ -130,7 +130,7 @@
   </div>
 
   <div class="footer">
-    Última actualización: {{ data.fecha_actualizacion }} </br>
+    Última actualización: {{ data.fecha_actualizacion }} </br></br> a
   </div>
 
   <div class="grid">
@@ -157,30 +157,7 @@
 
   <script>
     setInterval(() => {
-      fetch('/api/latest')
-        .then(res => res.json())
-        .then(data => {
-          document.getElementById("entrada").innerText = data.entrada_actual || '-';
-          document.getElementById("ganancia").innerText = data.ganancia_actual || '-';
-          document.getElementById("mayor").innerText = data.mayor_entrada || '-';
-          document.getElementById("tiempo").innerText = data.tiempo_operacion || '-';
-          document.getElementById("stop").innerText = data.stop_win_buscado || '-';
-
-          const tabla = document.getElementById("tablaGanancias").getElementsByTagName('tbody')[0];
-          tabla.innerHTML = "";
-          if (data.ganancias_dias) {
-            data.ganancias_dias.forEach(g => {
-              const row = tabla.insertRow();
-              row.insertCell(0).innerText = g.fecha;
-              const gainCell = row.insertCell(1);
-              gainCell.innerText = g.ganancia;
-              gainCell.style.color = g.ganancia >= 0 ? 'lime' : 'red';
-              row.insertCell(2).innerText = g.mayor_entrada || '-';
-            });
-          } else {
-            tabla.innerHTML = "<tr><td colspan='3'>Sin datos aún</td></tr>";
-          }
-        });
+     location.reload();
     }, 10000);
   </script>
 
