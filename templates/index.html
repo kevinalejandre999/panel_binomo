@@ -147,7 +147,10 @@
         {% for g in data.ganancias_dias %}
         <tr>
           <td>{{ g.fecha }}</td>
-          <td style="color: {{ 'lime' if g.ganancia >= 0 else 'red' }}">{{ g.ganancia }}</td>
+          <td style="color: {{ 'lime' if g.ganancia|float >= 0 else 'red' }}">
+            {{ "{:,.2f}".format(g.ganancia|float).replace(",", "X").replace(".", ",").replace("X", ".") }}
+          </td>
+
           <td>{{ g.mayor_entrada }}</td>
         </tr>
         {% endfor %}
