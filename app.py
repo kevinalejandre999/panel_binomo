@@ -1,31 +1,34 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, render_template, request, jsonify
 import json
 import os
 
 app = Flask(__name__)
 
-DATA_FILE = "data.json"
+DATA_FILE = 'data.json'
 
-# Página web que muestra datos
-@app.route("/")
+@app.route('/')
 def index():
-    if not os.path.exists(DATA_FILE):
-        data = {}
-    else:
-        with open(DATA_FILE) as f:
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, 'r') as f:
             data = json.load(f)
-    return render_template("index.html", data=data)
+    else:
+        data = {}
+    return render_template('index.html', data=data)
 
-# API para recibir datos del bot (POST)
-@app.route("/update", methods=["POST"])
-def update_data():
-    if request.is_json:
-        content = request.get_json()
-        with open(DATA_FILE, "w") as f:
-            json.dump(content, f, indent=4)
-        return jsonify({"message": "Datos actualizados correctamente"}), 200
-    return jsonify({"error": "Formato inválido. Se esperaba JSON."}), 400
+@app.route('/api/data', methods=['POST'])
+def api_data():
+    data = request.get_json()
+    with open(DATA_FILE, 'w') as f:
+        json.dump(data, f)
+    return jsonify({"status": "success"})
 
+@app.route('/api/latest')
+def api_latest():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, 'r') as f:
+            data = json.load(f)
+        return jsonify(data)
+    return jsonify({})
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
