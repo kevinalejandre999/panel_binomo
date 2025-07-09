@@ -1,144 +1,188 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Panel del Bot</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #121212;
-            color: #e0e0e0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Panel del Bot de Trading</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0d0d0d;
+      color: #00ff99;
+      margin: 0;
+      padding: 20px;
+    }
 
-        h1, h2 {
-            color: #00bcd4;
-        }
+    h1 {
+      text-align: center;
+      color: #00ff99;
+      margin-bottom: 40px;
+    }
 
-        .card {
-            background-color: #1e1e1e;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
+    .panel {
+      background-color: #111;
+      border-radius: 15px;
+      box-shadow: 0 0 15px #00ff99;
+      padding: 25px;
+      max-width: 600px;
+      margin: 0 auto 40px auto;
+    }
 
-        .label {
-            font-weight: bold;
-            margin-top: 10px;
-            color: #90caf9;
-        }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid #222;
+    }
 
-        .value {
-            font-size: 1.3em;
-            margin-bottom: 15px;
-            color: #ffffff;
-        }
+    .row:last-child {
+      border-bottom: none;
+    }
 
-        table.grid {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
+    .label {
+      color: #ccc;
+    }
 
-        table.grid th, table.grid td {
-            border: 1px solid #444;
-            padding: 10px;
-            text-align: center;
-        }
+    .value {
+      font-weight: bold;
+    }
 
-        table.grid th {
-            background-color: #263238;
-            color: #81d4fa;
-        }
+    .footer {
+      text-align: center;
+      color: #666;
+      font-size: 0.9em;
+      margin-top: -20px;
+    }
 
-        table.grid td {
-            background-color: #1c1c1c;
-        }
+    .grid {
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: #111;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00ff99;
+      overflow-x: auto;
+    }
 
-        .gain-positive {
-            color: #66bb6a;
-        }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
 
-        .gain-negative {
-            color: #ef5350;
-        }
-    </style>
+    th, td {
+      border: 1px solid #333;
+      padding: 10px;
+      text-align: center;
+      color: #eee;
+    }
+
+    th {
+      background-color: #1a1a1a;
+      color: #00ffcc;
+    }
+
+    @media (max-width: 600px) {
+      .row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .value {
+        margin-top: 5px;
+      }
+
+      .grid {
+        padding: 10px;
+      }
+
+      table, th, td {
+        font-size: 0.9em;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <h1>📡 Información en Tiempo Real</h1>
+  <h1>🤖 <strong>Panel del Bot de Trading</strong></h1>
 
-    <div class="card">
-        <div class="label">📥 Entrada Actual:</div>
-        <div class="value" id="entrada">{{ data.entrada_actual }}</div>
-
-        <div class="label">💰 Ganancia Actual:</div>
-        <div class="value" id="ganancia">{{ data.ganancia_actual }}</div>
-
-        <div class="label">📈 Mayor Entrada:</div>
-        <div class="value" id="mayor">{{ data.mayor_entrada }}</div>
-
-        <div class="label">⏱ Tiempo de Operación:</div>
-        <div class="value" id="tiempo">{{ data.tiempo_operacion }}</div>
-
-        <div class="label">🎯 Stop Win Buscado:</div>
-        <div class="value" id="stop">{{ data.stop_win_buscado }}</div>
+  <div class="panel">
+    <div class="row">
+      <div class="label">📥 Entrada actual:</div>
+      <div class="value" id="entrada">{{ data.entrada_actual }}</div>
     </div>
-
-    <div class="card">
-        <h2>📊 Ganancias por Día</h2>
-        <table class="grid" id="tablaGanancias">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Ganancia</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if data.ganancias_dias %}
-                    {% for g in data.ganancias_dias %}
-                        <tr>
-                            <td>{{ g.fecha }}</td>
-                            <td class="{{ 'gain-positive' if g.ganancia >= 0 else 'gain-negative' }}">{{ g.ganancia }}</td>
-                        </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr><td colspan="2">Sin datos aún</td></tr>
-                {% endif %}
-            </tbody>
-        </table>
+    <div class="row">
+      <div class="label">🏅 Ganancia actual:</div>
+      <div class="value" id="ganancia">{{ data.ganancia_actual }}</div>
     </div>
+    <div class="row">
+      <div class="label">📉 Mayor entrada:</div>
+      <div class="value" id="mayor">{{ data.mayor_entrada }}</div>
+    </div>
+    <div class="row">
+      <div class="label">⏱ Tiempo de operación:</div>
+      <div class="value" id="tiempo">{{ data.tiempo_operacion }}</div>
+    </div>
+    <div class="row">
+      <div class="label">🎯 Stop Win buscado:</div>
+      <div class="value" id="stop">{{ data.stop_win_buscado }}</div>
+    </div>
+  </div>
 
-    <script>
-        setInterval(() => {
-            fetch('/api/latest')
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById("entrada").innerText = data.entrada_actual || '-';
-                    document.getElementById("ganancia").innerText = data.ganancia_actual || '-';
-                    document.getElementById("mayor").innerText = data.mayor_entrada || '-';
-                    document.getElementById("tiempo").innerText = data.tiempo_operacion || '-';
-                    document.getElementById("stop").innerText = data.stop_win_buscado || '-';
+  <div class="footer">
+    Última actualización: {{ data.fecha_actualizacion }}
+  </div>
 
-                    const tabla = document.getElementById("tablaGanancias").getElementsByTagName('tbody')[0];
-                    tabla.innerHTML = "";
-                    if (data.ganancias_dias) {
-                        data.ganancias_dias.forEach(g => {
-                            let row = tabla.insertRow();
-                            row.insertCell(0).innerText = g.fecha;
-                            let cell = row.insertCell(1);
-                            cell.innerText = g.ganancia;
-                            cell.className = g.ganancia >= 0 ? 'gain-positive' : 'gain-negative';
-                        });
-                    } else {
-                        tabla.innerHTML = "<tr><td colspan='2'>Sin datos aún</td></tr>";
-                    }
-                });
-        }, 10000);
-    </script>
+  <div class="grid">
+    <h2 style="text-align:center; color:#00ffcc;">📊 Historial de Ganancias</h2>
+    <table id="tablaGanancias">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Ganancia</th>
+          <th>Mayor entrada</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for g in data.ganancias_dias %}
+        <tr>
+          <td>{{ g.fecha }}</td>
+          <td style="color: {{ 'lime' if g.ganancia >= 0 else 'red' }}">{{ g.ganancia }}</td>
+          <td>{{ g.mayor_entrada }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    setInterval(() => {
+      fetch('/api/latest')
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("entrada").innerText = data.entrada_actual || '-';
+          document.getElementById("ganancia").innerText = data.ganancia_actual || '-';
+          document.getElementById("mayor").innerText = data.mayor_entrada || '-';
+          document.getElementById("tiempo").innerText = data.tiempo_operacion || '-';
+          document.getElementById("stop").innerText = data.stop_win_buscado || '-';
+
+          const tabla = document.getElementById("tablaGanancias").getElementsByTagName('tbody')[0];
+          tabla.innerHTML = "";
+          if (data.ganancias_dias) {
+            data.ganancias_dias.forEach(g => {
+              const row = tabla.insertRow();
+              row.insertCell(0).innerText = g.fecha;
+              const gainCell = row.insertCell(1);
+              gainCell.innerText = g.ganancia;
+              gainCell.style.color = g.ganancia >= 0 ? 'lime' : 'red';
+              row.insertCell(2).innerText = g.mayor_entrada || '-';
+            });
+          } else {
+            tabla.innerHTML = "<tr><td colspan='3'>Sin datos aún</td></tr>";
+          }
+        });
+    }, 10000);
+  </script>
 
 </body>
 </html>
