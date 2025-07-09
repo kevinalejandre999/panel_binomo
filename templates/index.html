@@ -2,87 +2,138 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Panel del Bot de Trading</title>
+    <title>Panel del Bot</title>
+    <meta http-equiv="refresh" content="60"> <!-- fallback -->
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #0f0f0f;
-            color: #e0e0e0;
-            margin: 0;
-            padding: 20px;
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f4f6f9;
+            color: #333;
         }
 
         h1 {
-            text-align: center;
-            color: #00ff88;
-            margin-bottom: 40px;
+            color: #1d3557;
         }
 
-        .container {
-            max-width: 700px;
-            margin: auto;
-            background-color: #1a1a1a;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 0 15px #00ff88;
-        }
-
-        .info {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #333;
-        }
-
-        .info:last-child {
-            border-bottom: none;
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
 
         .label {
             font-weight: bold;
-            color: #ffffffcc;
+            margin-top: 10px;
         }
 
         .value {
-            font-weight: bold;
-            color: #00ff88;
+            font-size: 1.2em;
+            margin-bottom: 10px;
         }
 
-        .footer {
+        .grid {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+
+        .grid th, .grid td {
+            border: 1px solid #ccc;
+            padding: 10px;
             text-align: center;
-            margin-top: 20px;
-            font-size: 0.85em;
-            color: #777;
+        }
+
+        .grid th {
+            background-color: #2a9d8f;
+            color: white;
+        }
+
+        .gain-positive {
+            color: green;
+        }
+
+        .gain-negative {
+            color: red;
         }
     </style>
 </head>
 <body>
-    <h1>🤖 Panel del Bot de Trading</h1>
-    <div class="container">
-        <div class="info">
-            <span class="label">📥 Entrada actual:</span>
-            <span class="value">{{ data.entrada_actual or 'N/A' }}</span>
-        </div>
-        <div class="info">
-            <span class="label">💰 Ganancia actual:</span>
-            <span class="value">{{ data.ganancia_actual or 'N/A' }}</span>
-        </div>
-        <div class="info">
-            <span class="label">📈 Mayor entrada:</span>
-            <span class="value">{{ data.mayor_entrada or 'N/A' }}</span>
-        </div>
-        <div class="info">
-            <span class="label">⏱️ Tiempo de operación:</span>
-            <span class="value">{{ data.tiempo_operacion or 'N/A' }}</span>
-        </div>
-        <div class="info">
-            <span class="label">🎯 Stop Win buscado:</span>
-            <span class="value">{{ data.stop_win or 'N/A' }}</span>
-        </div>
+
+    <h1>Información en Tiempo Real</h1>
+
+    <div class="card">
+        <div class="label">📥 Entrada Actual:</div>
+        <div class="value" id="entrada">{{ data.entrada_actual }}</div>
+
+        <div class="label">💰 Ganancia Actual:</div>
+        <div class="value" id="ganancia">{{ data.ganancia_actual }}</div>
+
+        <div class="label">📈 Mayor Entrada:</div>
+        <div class="value" id="mayor">{{ data.mayor_entrada }}</div>
+
+        <div class="label">⏱ Tiempo de Operación:</div>
+        <div class="value" id="tiempo">{{ data.tiempo_operacion }}</div>
+
+        <div class="label">🎯 Stop Win Buscado:</div>
+        <div class="value" id="stop">{{ data.stop_win_buscado }}</div>
     </div>
 
-    <div class="footer">
-        Última actualización: {{ data.fecha or 'N/A' }}
+    <div class="card">
+        <h2>📊 Ganancias por Día</h2>
+        <table class="grid" id="tablaGanancias">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Ganancia</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if data.ganancias_dias %}
+                    {% for g in data.ganancias_dias %}
+                        <tr>
+                            <td>{{ g.fecha }}</td>
+                            <td class="{{ 'gain-positive' if g.ganancia >= 0 else 'gain-negative' }}">{{ g.ganancia }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr><td colspan="2">Sin datos aún</td></tr>
+                {% endif %}
+            </tbody>
+        </table>
     </div>
+
+    <script>
+        // Autoactualización cada 10 segundos
+        setInterval(() => {
+            fetch('/api/latest')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById("entrada").innerText = data.entrada_actual;
+                    document.getElementById("ganancia").innerText = data.ganancia_actual;
+                    document.getElementById("mayor").innerText = data.mayor_entrada;
+                    document.getElementById("tiempo").innerText = data.tiempo_operacion;
+                    document.getElementById("stop").innerText = data.stop_win_buscado;
+
+                    // Actualizar tabla
+                    const tabla = document.getElementById("tablaGanancias").getElementsByTagName('tbody')[0];
+                    tabla.innerHTML = "";
+                    if (data.ganancias_dias) {
+                        data.ganancias_dias.forEach(g => {
+                            let row = tabla.insertRow();
+                            row.insertCell(0).innerText = g.fecha;
+                            let cell = row.insertCell(1);
+                            cell.innerText = g.ganancia;
+                            cell.className = g.ganancia >= 0 ? 'gain-positive' : 'gain-negative';
+                        });
+                    } else {
+                        tabla.innerHTML = "<tr><td colspan='2'>Sin datos aún</td></tr>";
+                    }
+                });
+        }, 10000);
+    </script>
+
 </body>
 </html>
